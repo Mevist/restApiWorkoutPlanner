@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from django.db import models
 
@@ -6,8 +7,8 @@ from django.db import models
 # Create your models here.
 class Exercise(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField()
-
+    description = models.TextField(blank=True)
+    object_version = models.IntegerField(default=0)
     # sets = models.DecimalField(max_digits=2, decimal_places=0, null=True, blank=True)
     # repetitions = models.DecimalField(max_digits=2, decimal_places=0,null=True, blank=True)
     def __str__(self):
@@ -25,13 +26,14 @@ class WorkoutPlan(models.Model):
     type = models.CharField(max_length=100, null=True, blank=True, choices=TYPE)
     sets = models.JSONField(blank=True)
     repetitions = models.JSONField(blank=True)
-
+    object_version = models.IntegerField(default=0)
     # sets = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return self.name
 
 class History(models.Model):
+    hid = models.BigAutoField(primary_key=True)
     workoutplan_name = models.CharField(max_length=50, blank=True)
     date = models.DateTimeField(auto_now_add=True)
     workout = models.JSONField(blank=True)
@@ -48,6 +50,7 @@ class User(models.Model):
     workoutplans = models.ManyToManyField(WorkoutPlan, blank=True)
     group = models.ManyToManyField("self", blank=True)
     history = models.ManyToManyField(History, blank=True)
+    object_version = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
